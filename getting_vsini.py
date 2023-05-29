@@ -280,13 +280,13 @@ def determine_astrophysical_parameters_using_synth_spectra(normed_star_file, cod
            'vmic': [params['vmic']], 'vmac': [params['vmac']], 'vsini': [params['vsini']], 
            'limb_darkening_coeff': [params['limb_darkening_coeff']], 'R': [params['R']]} 
     df_params = pd.DataFrame(d_params)
-    df_params.to_csv('./{}_params_{}_{}'.format(star_name, code, line_list), index=None)
+    df_params.to_csv('./{}_params_{}_{}.txt'.format(star_name, code, line_list), index=None)
     
     d_errors = {'teff': [errors['teff']], 'logg': [errors['logg']], 'MH': [errors['MH']], 'alpha': [errors['alpha']], 
            'vmic': [errors['vmic']], 'vmac': [errors['vmac']], 'vsini': [errors['vsini']], 
            'limb_darkening_coeff': [errors['limb_darkening_coeff']], 'R': [errors['R']]} 
     df_errors = pd.DataFrame(d_errors)
-    df_errors.to_csv('./{}_errors_{}_{}'.format(star_name, code, line_list), index=None)
+    df_errors.to_csv('./{}_errors_{}_{}.txt'.format(star_name, code, line_list), index=None)
     
     
     logging.info("Saving synthetic spectrum...")
