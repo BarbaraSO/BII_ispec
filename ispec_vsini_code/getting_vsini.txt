@@ -9,11 +9,24 @@ import logging
 import multiprocessing
 from multiprocessing import Pool
 from scipy.interpolate import interpn
-sys.path.insert(0, "/home/sousasag/Programas/GIT_projects/Others/iSpec")
-import ispec
-#ispec_dir = os.getcwd() + '/'
-ispec_dir = '/home/sousasag/Programas/GIT_projects/Others/iSpec/'
 
+#--- iSpec directory -------------------------------------------------------------
+
+#if we're in the ispec directory
+ispec_dir = os.getcwd() + '/' 
+
+# #if we're not in the ispec directory we should specify its path, for example:
+# #making it a requested argument
+# ispec_dir = sys.argv[1] #if we use this method we should change lines 51, 52 and 53
+
+# testing in the last meeting:
+# sys.path.insert(0, "/home/sousasag/Programas/GIT_projects/Others/iSpec")
+# ispec_dir = '/home/sousasag/Programas/GIT_projects/Others/iSpec/'
+
+
+sys.path.insert(0, os.path.abspath(ispec_dir))
+print(ispec_dir)
+import ispec
 
 """
 Defining arguments that will be necessary in the functions' inputs:
@@ -79,24 +92,21 @@ def interpolation_function(T,logg,feh):
     -logg: Range=[3,5]
     -feh: Range=[-0.5,0.5]
     """
+    Temperature=np.arange(3500,7000,100)
+    Logg=np.arange(3.0,5.0,0.1)
+    FeH=np.arange(-0.5,0.6,0.1)
     
-    if T < 3500 or T >= 7000:
+    if T < 3500 or T > Temperature[-1]:
         return 0.6
-    if logg < 3 or logg >= 5:
+    if logg < 3 or logg > Logg[-1]:
         return 0.6
-    if feh < -0.5 or feh > 0.5:
+    if feh < -0.5 or feh > FeH[-1]:
         return 0.6
     
     return interpn(Variables, VL,np.array([T,logg,feh]))[0]
 
 
 ###############################################################################
-#--- iSpec directory -------------------------------------------------------------
-
-#sys.path.insert(0, os.path.abspath(ispec_dir))
-
-print(ispec_dir)
-
 
 #--- Change LOG level ----------------------------------------------------------
 #LOG_LEVEL = "warning"
@@ -270,11 +280,7 @@ def determine_astrophysical_parameters_using_synth_spectra(normed_star_file, cod
     linelist_free_loggf = None
 
     # Line regions
-    #line_regions = ispec.read_line_regions(ispec_dir + 'Reduced_line_list_{}.txt'.format(line_list))
-
-    line_regions = ispec.read_line_regions(os.getcwd() + '/Reduced_line_list_{}.txt'.format(line_list))
-
-
+    line_regions = ispec.read_line_regions(ispec_dir + 'Reduced_line_list_{}.txt'.format(line_list))
 
     # Read segments if we have them or...
     segments = ispec.read_segment_regions(ispec_dir + "/input/regions/fe_lines_segments.txt")
@@ -310,4 +316,3 @@ normed_star_file, star_spectrum, estimated_snr, rv, rv_err = normalizing(star_fi
 vsini, err_vsini = determine_astrophysical_parameters_using_synth_spectra(normed_star_file, code, line_list, star_name, initial_teff, initial_logg, initial_MH, initial_vmic, initial_R)
 
 print('vsini = {} +/- {}'.format(vsini, err_vsini))
-
